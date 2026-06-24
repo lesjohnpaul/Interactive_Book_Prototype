@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="The Story of Mara — a sample personalized SOURCE book, written from the reader's own answers." />
+<title>The Story of Mara · A SOURCE Storybook</title>
+<style>
+/* ════════════════════════════════════════════════════════════
+   SOURCE STORYBOOK MOCKUP — single-file, zero dependencies
+   Crayon-storybook design language: cream paper, sticker
+   borders (3px ink + hard offset shadow), rounded display
+   face, Georgia body prose.
+   ════════════════════════════════════════════════════════════ */
+
+:root {
+  /* hex fallbacks first, oklch overrides after */
+  --paper: #faf4e4;        --paper: oklch(97% 0.025 90);
+  --paper-deep: #f1e6c9;   --paper-deep: oklch(93.5% 0.045 86);
+  --ink: #363353;          --ink: oklch(33% 0.07 282);
+  --ink-soft: #4b4868;     --ink-soft: oklch(42% 0.06 282);
+  --ink-faint: #6c6987;    --ink-faint: oklch(53% 0.05 282);
+  --sienna: #de6440;       --sienna: oklch(64% 0.19 36);
+  --sienna-deep: #bb4a2b;  --sienna-deep: oklch(54% 0.18 34);
+  --sienna-wash: #f8e3d6;  --sienna-wash: oklch(92% 0.05 45);
+  --gold: #f3cf5d;         --gold: oklch(86% 0.15 92);
+  --gold-wash: #faf0c8;    --gold-wash: oklch(95% 0.06 95);
+  --moss: #3d8b56;         --moss: oklch(56% 0.14 145);
+  --moss-wash: #ddefdf;    --moss-wash: oklch(94% 0.04 150);
+  --sky: #94c4e6;          --sky: oklch(80% 0.09 230);
+  --sky-wash: #e1eef8;     --sky-wash: oklch(94% 0.03 230);
+  --sky-deep: #3f76b4;     --sky-deep: oklch(56% 0.13 248);
+  --grape: #9355b4;        --grape: oklch(56% 0.17 305);
+  --grape-wash: #f0e4f5;   --grape-wash: oklch(94% 0.04 305);
+  --cloud: #fffdf8;        --cloud: oklch(99% 0.006 90);
+
+  --font-display: ui-rounded, "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold",
+                  "Segoe UI", "Trebuchet MS", "Comic Sans MS", system-ui, sans-serif;
+  --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+
+  --shadow-sticker: 0.3rem 0.3rem 0 var(--ink);
+  --page-pad: clamp(1.25rem, 4.5vw, 3.25rem);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 85% -5%, rgba(243, 207, 93, 0.28), transparent 60%),
+    radial-gradient(ellipse 80% 70% at 5% 105%, rgba(148, 196, 230, 0.25), transparent 55%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+::selection { background: var(--gold); color: var(--ink); }
+
+img { max-width: 100%; display: block; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible {
+  outline: 3px dashed var(--grape);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Rainbow reading-progress bar ───────────────────────── */
+.progress-rail {
+  position: fixed; inset: 0 0 auto 0; height: 6px;
+  background: rgba(54, 51, 83, 0.12);
+  z-index: 60;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--sienna), var(--gold), var(--moss), var(--sky-deep), var(--grape));
+  border-right: 2px solid var(--ink);
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Reader chrome (header) ─────────────────────────────── */
+.chrome {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 1.25rem clamp(0.9rem, 3vw, 1.5rem) 0.75rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.brand .star-dot { width: 16px; height: 16px; flex: none; }
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--cloud);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sticker);
+  cursor: pointer;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 0.45rem 0.45rem 0 var(--ink); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 0.1rem 0.1rem 0 var(--ink); }
+.btn-gold { background: var(--gold); }
+.btn-coral { background: var(--sienna); color: var(--cloud); }
+.btn svg { width: 1em; height: 1em; flex: none; }
+.btn[disabled] { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: var(--shadow-sticker); }
+
+/* ── The book itself ────────────────────────────────────── */
+.book-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0.75rem clamp(0.9rem, 3vw, 1.5rem) 1rem;
+  perspective: 1600px;
+}
+
+.page {
+  display: none;
+  position: relative;
+  background: var(--cloud);
+  border: 3px solid var(--ink);
+  border-radius: 1.5rem;
+  box-shadow: 0.4rem 0.4rem 0 var(--ink);
+  padding: var(--page-pad);
+  overflow: hidden;
+  transform-origin: left center;
+  min-height: min(78vh, 920px);
+}
+.page.current { display: block; }
+
+@keyframes turnFwd {
+  from { opacity: 0; transform: translateX(46px) rotateY(-10deg); }
+  to   { opacity: 1; transform: translateX(0) rotateY(0deg); }
+}
+@keyframes turnBack {
+  from { opacity: 0; transform: translateX(-46px) rotateY(8deg); }
+  to   { opacity: 1; transform: translateX(0) rotateY(0deg); }
+}
+.page.turn-fwd  { animation: turnFwd 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.page.turn-back { animation: turnBack 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* page corner hint — a folded paper tip inviting the next turn */
+.corner-hint {
+  position: absolute; right: 0; bottom: 0;
+  width: 56px; height: 56px;
+  border: none; padding: 0;
+  background: linear-gradient(135deg, transparent 49.5%, var(--paper-deep) 50%);
+  border-top-left-radius: 14px;
+  cursor: pointer;
+}
+.corner-hint::after {
+  content: "";
+  position: absolute; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, transparent 49.5%, rgba(54, 51, 83, 0.18) 50%, transparent 62%);
+}
+@keyframes cornerBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.corner-hint { transform-origin: bottom right; animation: cornerBreathe 2.6s ease-in-out infinite; }
+.corner-hint:hover { animation-play-state: paused; transform: scale(1.18); }
+
+/* ── Typography ─────────────────────────────────────────── */
+h1, h2, h3, .display { font-family: var(--font-display); color: var(--ink); }
+
+.prose {
+  font-size: clamp(1.02rem, 1rem + 0.3vw, 1.18rem);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  max-width: 66ch;
+  margin-inline: auto;
+}
+.prose p + p { margin-top: 1.15em; }
+
+.dropcap::first-letter {
+  font-family: var(--font-display);
+  float: left;
+  font-size: 3.2em;
+  line-height: 0.82;
+  padding: 0.06em 0.14em 0 0;
+  color: var(--sienna);
+  font-weight: 700;
+}
+
+.scribble {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='8' viewBox='0 0 44 8'%3E%3Cpath d='M1 5.5 C 6 1.5, 10 7.5, 15 4 S 24 1.5, 29 5 S 39 7, 43 3.5' fill='none' stroke='%23de6440' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  background-size: 44px 8px;
+  padding-bottom: 8px;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ── Cover page ─────────────────────────────────────────── */
+.cover {
+  text-align: center;
+  background:
+    radial-gradient(ellipse 100% 55% at 50% -8%, var(--gold-wash), transparent 65%),
+    var(--cloud);
+}
+.cover-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; }
+
+.cover-kicker {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 0.8rem; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--sienna-deep);
+  display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.cover-kicker::before, .cover-kicker::after {
+  content: ""; width: 2.2rem; height: 3px; border-radius: 99px; background: var(--gold);
+}
+
+.cover h1 {
+  font-size: clamp(2.2rem, 5.5vw + 1rem, 3.9rem);
+  line-height: 1.08;
+  font-weight: 800;
+}
+.cover h1 .of { display: block; font-size: 0.42em; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.3em; }
+.cover h1 .name { color: var(--sienna); }
+
+.cover-sub {
+  font-style: italic;
+  color: var(--ink-soft);
+  max-width: 34ch;
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
+}
+
+.cover-art {
+  position: relative;
+  width: min(72%, 340px);
+  margin-top: 0.4rem;
+  transform: rotate(-1.5deg);
+}
+.cover-art img {
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  width: 100%;
+  border: 3px solid var(--ink);
+  border-radius: 1.1rem;
+  box-shadow: 0.45rem 0.45rem 0 var(--ink);
+  background: var(--paper-deep);
+}
+.cover-byline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+}
+
+/* washi tape strips */
+.tape {
+  position: absolute;
+  width: 96px; height: 26px;
+  background: repeating-linear-gradient(45deg,
+    rgba(148, 196, 230, 0.85) 0 8px,
+    rgba(225, 238, 248, 0.85) 8px 16px);
+  border: 1px solid rgba(54, 51, 83, 0.25);
+  border-radius: 3px;
+  opacity: 0.92;
+  pointer-events: none;
+}
+.tape-gold {
+  background: repeating-linear-gradient(45deg,
+    rgba(243, 207, 93, 0.9) 0 8px,
+    rgba(250, 240, 200, 0.9) 8px 16px);
+}
+.tape-grape {
+  background: repeating-linear-gradient(45deg,
+    rgba(147, 85, 180, 0.55) 0 8px,
+    rgba(240, 228, 245, 0.85) 8px 16px);
+}
+.tape-tl { top: -13px; left: -28px; transform: rotate(-38deg); }
+.tape-tr { top: -13px; right: -28px; transform: rotate(38deg); }
+.tape-bl { bottom: -13px; left: -28px; transform: rotate(38deg); }
+.tape-br { bottom: -13px; right: -28px; transform: rotate(-38deg); }
+
+/* crayon stars (pure CSS, clip-path) */
+.star {
+  display: inline-block;
+  width: 22px; height: 22px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.star-coral { background: var(--sienna); }
+.star-sky   { background: var(--sky-deep); }
+.star-moss  { background: var(--moss); }
+.star-grape { background: var(--grape); }
+.star-sm { width: 13px; height: 13px; }
+.star-lg { width: 32px; height: 32px; }
+
+/* floating dust-mote stars on the cover */
+.motes { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.mote {
+  position: absolute;
+  bottom: -28px;
+  width: 14px; height: 14px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  opacity: 0;
+  animation: drift 11s linear infinite;
+}
+@keyframes drift {
+  0%   { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+  12%  { opacity: 0.85; }
+  85%  { opacity: 0.5; }
+  100% { transform: translateY(-105vh) rotate(280deg) scale(1.15); opacity: 0; }
+}
+.mote:nth-child(1) { left: 8%;  animation-delay: 0s;    width: 11px; height: 11px; background: var(--sienna); }
+.mote:nth-child(2) { left: 22%; animation-delay: 2.4s;  width: 16px; height: 16px; }
+.mote:nth-child(3) { left: 38%; animation-delay: 5.2s;  width: 10px; height: 10px; background: var(--sky-deep); }
+.mote:nth-child(4) { left: 58%; animation-delay: 1.3s;  width: 13px; height: 13px; background: var(--grape); }
+.mote:nth-child(5) { left: 72%; animation-delay: 6.8s;  width: 17px; height: 17px; }
+.mote:nth-child(6) { left: 86%; animation-delay: 3.7s;  width: 11px; height: 11px; background: var(--moss); }
+.mote:nth-child(7) { left: 50%; animation-delay: 8.6s;  width: 12px; height: 12px; background: var(--sienna); }
+
+/* ── Dedication + foreword spread ───────────────────────── */
+.spread { display: grid; gap: 2rem; }
+@media (min-width: 720px) {
+  .spread { grid-template-columns: 5fr 7fr; gap: 2.5rem; align-items: start; }
+  .spread .dedication { border-right: 3px dotted rgba(54, 51, 83, 0.25); padding-right: 2.5rem; min-height: 100%; }
+}
+.dedication { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; justify-content: center; padding-block: 1rem; }
+.dedication p { font-style: italic; color: var(--ink-soft); max-width: 30ch; font-size: 1.08rem; }
+
+.ornament-row { display: flex; align-items: center; gap: 0.55rem; justify-content: center; }
+.ornament-row .rule { width: 3rem; height: 3px; border-radius: 99px; background: var(--ink); opacity: 0.25; }
+
+/* ── Contents page ──────────────────────────────────────── */
+.toc { list-style: none; max-width: 56ch; margin: 1.8rem auto 0; display: grid; gap: 0.85rem; }
+.toc-link {
+  width: 100%;
+  display: flex; align-items: baseline; gap: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.18rem);
+  text-align: left;
+  padding: 0.55rem 0.8rem;
+  border: 3px solid transparent;
+  border-radius: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out;
+}
+.toc-link:hover {
+  background: var(--cloud);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-sticker);
+  transform: translate(-2px, -2px);
+}
+.toc-num {
+  flex: none;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: var(--cloud);
+  background: var(--c, var(--sienna));
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.12rem 0.6rem;
+  align-self: center;
+}
+.toc-leader {
+  flex: 1;
+  border-bottom: 3px dotted rgba(54, 51, 83, 0.35);
+  transform: translateY(-0.35em);
+  min-width: 1.5rem;
+}
+.toc-page { font-size: 0.85rem; color: var(--ink-faint); align-self: center; }
+
+/* ── Chapter pages ──────────────────────────────────────── */
+.chapter-art {
+  margin: calc(var(--page-pad) * -1) calc(var(--page-pad) * -1) 0;
+  position: relative;
+}
+.chapter-art img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: 3px solid var(--ink);
+  background: var(--paper-deep);
+}
+.chapter-art .caption-strip {
+  position: absolute; left: 50%; bottom: -1.1rem; transform: translateX(-50%) rotate(-1deg);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  background: var(--gold);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.25rem 1.1rem;
+  box-shadow: 0.2rem 0.2rem 0 var(--ink);
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.chapter-head { text-align: center; margin: 2.6rem auto 1.6rem; max-width: 60ch; }
+.chapter-numeral {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  color: var(--cloud);
+  background: var(--c, var(--sienna));
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  display: inline-block;
+  padding: 0.25rem 1.2rem;
+  box-shadow: 0.2rem 0.2rem 0 var(--ink);
+  margin-bottom: 0.9rem;
+}
+.chapter-head h2 { font-size: clamp(1.7rem, 1.3rem + 2.2vw, 2.6rem); line-height: 1.15; font-weight: 800; }
+.epigraph {
+  margin-top: 0.9rem;
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: 1.02rem;
+}
+.epigraph cite { font-style: normal; font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-top: 0.3rem; }
+
+/* pull-quote — "in your own words" */
+.pull-quote {
+  position: relative;
+  max-width: 58ch;
+  margin: 2.2rem auto;
+  padding: 1.5rem 1.6rem 1.3rem;
+  background: var(--gold-wash);
+  border: 3px solid var(--ink);
+  border-radius: 1.3rem;
+  box-shadow: var(--shadow-sticker);
+  transform: rotate(-0.8deg);
+}
+.pull-quote::before {
+  content: "“";
+  position: absolute; top: -1.45rem; left: 1rem;
+  font-family: var(--font-display);
+  font-size: 3.4rem; line-height: 1;
+  color: var(--sienna);
+  text-shadow: 2px 2px 0 var(--cloud);
+}
+.pull-quote p {
+  font-style: italic;
+  font-size: clamp(1.08rem, 1rem + 0.5vw, 1.3rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+.pull-quote footer {
+  margin-top: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sienna-deep);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.pull-quote footer::before { content: ""; width: 1.6rem; height: 3px; border-radius: 99px; background: var(--sienna); }
+
+/* "Think about it!" reflection box */
+.reflection {
+  position: relative;
+  max-width: 58ch;
+  margin: 2.4rem auto 0.6rem;
+  padding: 1.7rem 1.5rem 1.4rem;
+  background: var(--sky-wash);
+  border: 3px dashed var(--ink);
+  border-radius: 1.3rem;
+}
+.reflection-label {
+  position: absolute; top: -1.05rem; left: 1.2rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--sky-deep);
+  color: var(--cloud);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.2rem 0.9rem;
+  box-shadow: 0.18rem 0.18rem 0 var(--ink);
+  transform: rotate(-2deg);
+  display: inline-flex; align-items: center; gap: 0.45rem;
+}
+.reflection-label .star { width: 14px; height: 14px; background: var(--gold); }
+.reflection p { color: var(--ink-soft); font-size: 1.02rem; }
+
+/* inset vignettes — polaroid / postcard re-uses of the chapter art */
+.vignette {
+  background: var(--cloud);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-sticker);
+  padding: 0.55rem 0.55rem 0.9rem;
+  border-radius: 0.6rem;
+  width: min(46%, 215px);
+  position: relative;
+  margin: 0.4rem 0 0.9rem;
+}
+.vignette img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  border-radius: 0.35rem;
+  background: var(--paper-deep);
+}
+.vignette figcaption {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-align: center;
+  color: var(--ink-faint);
+  padding-top: 0.5rem;
+}
+.vignette .tape { width: 70px; height: 20px; }
+.vig-left  { float: left;  margin-right: 1.4rem; transform: rotate(-2.4deg); }
+.vig-right { float: right; margin-left: 1.4rem;  transform: rotate(2.2deg); }
+@media (max-width: 480px) {
+  .vig-left, .vig-right { float: none; width: 70%; margin: 1.2rem auto; }
+}
+
+.clearfix::after { content: ""; display: table; clear: both; }
+
+/* postcard variant (wide crop) */
+.postcard { width: min(60%, 290px); }
+.postcard img { aspect-ratio: 16 / 10; }
+
+.starline { display: flex; justify-content: center; gap: 0.8rem; margin: 2.2rem 0 0.4rem; }
+
+/* ── Closing + back cover ───────────────────────────────── */
+.closing-head { text-align: center; margin: 1.6rem auto 1.4rem; }
+.closing-head h2 { font-size: clamp(1.8rem, 1.4rem + 2.4vw, 2.7rem); font-weight: 800; }
+
+.back-cover {
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 110%, var(--sienna-wash), transparent 60%),
+    var(--cloud);
+  text-align: center;
+}
+.back-cover.current { display: flex; }
+.back-inner { margin: auto; max-width: 50ch; display: flex; flex-direction: column; align-items: center; gap: 1.4rem; padding-block: 2rem; }
+.back-blurb { font-style: italic; color: var(--ink-soft); font-size: 1.08rem; }
+.colophon {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.spine-mark {
+  width: 64px; height: 64px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0.25rem 0.25rem 0 var(--ink);
+  display: grid; place-items: center;
+}
+.spine-mark .star { width: 30px; height: 30px; background: var(--sienna); }
+
+/* ── Bottom nav: back / pager / next ────────────────────── */
+.reader-nav {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 1.1rem clamp(0.9rem, 3vw, 1.5rem) 2.2rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.pager {
+  display: flex; gap: 0.45rem; align-items: center; justify-content: center;
+  flex: 1; min-width: 100%;
+  order: -1;
+  padding-bottom: 0.4rem;
+}
+@media (min-width: 640px) {
+  .pager { min-width: 0; order: 0; padding-bottom: 0; }
+}
+.pager-dot {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.pager-dot .star {
+  width: 17px; height: 17px;
+  background: var(--paper-deep);
+  outline: none;
+  transition: transform 0.15s ease-out, background 0.2s ease-out;
+}
+.pager-dot:hover .star { animation: wiggle 0.4s ease-in-out 2; background: var(--gold); }
+.pager-dot[aria-current="page"] .star { background: var(--sienna); transform: scale(1.35); }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-12deg) scale(1.2); }
+  50% { transform: rotate(12deg) scale(1.2); }
+}
+
+.page-counter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-align: center;
+  width: 100%;
+  padding-bottom: 0.5rem;
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .page.turn-fwd, .page.turn-back { animation: none; }
+  .mote { animation: none; opacity: 0; }
+  .corner-hint { animation: none; }
+  .pager-dot:hover .star { animation: none; }
+  .progress-fill, .btn, .toc-link { transition: none; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   PRINT — "Download as PDF" prints every page, one per sheet,
+   in book order with backgrounds intact.
+   ════════════════════════════════════════════════════════════ */
+@media print {
+  @page { size: A4 portrait; margin: 10mm; }
+
+  * {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body { background: white !important; }
+
+  .progress-rail, .chrome, .reader-nav, .corner-hint, .motes { display: none !important; }
+
+  .book-wrap { max-width: none; padding: 0; perspective: none; }
+
+  .page {
+    display: block !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    min-height: 0;
+    margin: 0 0 6mm;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+  }
+  .page:last-of-type { break-after: auto; page-break-after: auto; }
+
+  .pull-quote, .reflection, .vignette { break-inside: avoid; page-break-inside: avoid; }
+  .vignette, .pull-quote { box-shadow: none; }
+  .cover-art img { box-shadow: none; }
+  .chapter-art img { aspect-ratio: auto; max-height: 70mm; width: 100%; object-fit: cover; }
+}
+</style>
+</head>
+<body>
+
+<!-- rainbow reading progress -->
+<div class="progress-rail" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+
+<header class="chrome">
+  <span class="brand">
+    <span class="star star-coral star-dot" aria-hidden="true"></span>
+    SOURCE · Storybook
+  </span>
+  <button type="button" class="btn btn-gold" id="printBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3v12" /><path d="M6 11l6 6 6-6" /><path d="M4 20h16" />
+    </svg>
+    Download as PDF
+  </button>
+</header>
+
+<main class="book-wrap" id="book" aria-label="The Story of Mara, an illustrated storybook">
+  <p class="visually-hidden" role="status" aria-live="polite" id="pageAnnounce"></p>
+
+  <!-- ═════════ PAGE 1 · COVER ═════════ -->
+  <section class="page cover current" data-title="Cover" aria-labelledby="coverTitle">
+    <div class="motes" aria-hidden="true">
+      <span class="mote"></span><span class="mote"></span><span class="mote"></span>
+      <span class="mote"></span><span class="mote"></span><span class="mote"></span>
+      <span class="mote"></span>
+    </div>
+    <div class="cover-inner">
+      <span class="cover-kicker">A book written from your own words</span>
+      <h1 id="coverTitle" tabindex="-1">
+        <span class="of">The Story of</span>
+        <span class="name scribble">Mara</span>
+      </h1>
+      <p class="cover-sub">Your very own storybook in four chapters, told in your own words.</p>
+      <figure class="cover-art">
+        <span class="tape tape-gold tape-tl" aria-hidden="true"></span>
+        <span class="tape tape-br" aria-hidden="true"></span>
+        <img src="illustrations/cover.webp"
+             alt="Crayon-style illustration of a girl by a harbor at golden hour, boats and fishing nets behind her"
+             width="600" height="800" />
+      </figure>
+      <p class="cover-byline">as remembered by <strong>Mara Velasco</strong> · made with SOURCE</p>
+    </div>
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 2 · DEDICATION + FOREWORD ═════════ -->
+  <section class="page" data-title="Dedication &amp; Foreword" aria-labelledby="forewordTitle">
+    <div class="spread">
+      <div class="dedication">
+        <span class="star star-grape" aria-hidden="true"></span>
+        <h2 class="eyebrow" style="color: var(--grape);">Dedication</h2>
+        <p>For Mara Velasco — written from your own words, one honest answer at a time.</p>
+        <div class="ornament-row" aria-hidden="true">
+          <span class="rule"></span><span class="star star-sm"></span><span class="rule"></span>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--ink-faint);">And for the porch in Cebu where the nets were mended, and the song that circled its same three bars.</p>
+      </div>
+      <div class="prose">
+        <h2 id="forewordTitle" tabindex="-1" style="font-size: clamp(1.5rem, 1.2rem + 1.6vw, 2.1rem); margin-bottom: 1rem;">Foreword</h2>
+        <p class="dropcap">This is not a book about someone else. Every example in these pages, every case study, every turning point belongs to you, Mara. You wrote it without noticing, one honest answer at a time — between errands, in the blue minutes before sleep, in the voice notes you almost deleted.</p>
+        <p>Read it slowly. Some of what follows you said in passing; seen in print, it may say more than you intended. That is the point. A life examined at the right distance starts to look like what it has been all along — a story, with an author who is still holding the pen.</p>
+        <p>Four chapters wait ahead. The first three are memory; the last one is a map. You will recognize every word, because every word began as yours.</p>
+      </div>
+    </div>
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 3 · CONTENTS ═════════ -->
+  <section class="page" data-title="Contents" aria-labelledby="tocTitle">
+    <div class="chapter-head" style="margin-top: 1rem;">
+      <span class="chapter-numeral" style="--c: var(--moss);">Contents</span>
+      <h2 id="tocTitle" tabindex="-1">What Your Story Holds</h2>
+      <p class="epigraph">Tap any chapter to jump straight to it.</p>
+    </div>
+    <nav aria-label="Book contents">
+      <ol class="toc">
+        <li><button type="button" class="toc-link" data-goto="3">
+          <span class="toc-num" style="--c: var(--sienna);">I</span>
+          <span>Where You Began</span><span class="toc-leader" aria-hidden="true"></span><span class="toc-page">p. 4</span>
+        </button></li>
+        <li><button type="button" class="toc-link" data-goto="4">
+          <span class="toc-num" style="--c: var(--moss);">II</span>
+          <span>The Shape of Your Days</span><span class="toc-leader" aria-hidden="true"></span><span class="toc-page">p. 5</span>
+        </button></li>
+        <li><button type="button" class="toc-link" data-goto="5">
+          <span class="toc-num" style="--c: var(--sky-deep);">III</span>
+          <span>What You Carry</span><span class="toc-leader" aria-hidden="true"></span><span class="toc-page">p. 6</span>
+        </button></li>
+        <li><button type="button" class="toc-link" data-goto="6">
+          <span class="toc-num" style="--c: var(--grape);">IV</span>
+          <span>This Is Where We Are</span><span class="toc-leader" aria-hidden="true"></span><span class="toc-page">p. 7</span>
+        </button></li>
+        <li><button type="button" class="toc-link" data-goto="7">
+          <span class="toc-num" style="--c: var(--gold); color: var(--ink);">★</span>
+          <span>Begin Again</span><span class="toc-leader" aria-hidden="true"></span><span class="toc-page">p. 8</span>
+        </button></li>
+      </ol>
+    </nav>
+    <div class="starline" aria-hidden="true">
+      <span class="star star-sm star-coral"></span>
+      <span class="star star-sm"></span>
+      <span class="star star-sm star-moss"></span>
+      <span class="star star-sm star-sky"></span>
+      <span class="star star-sm star-grape"></span>
+    </div>
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 4 · CHAPTER I ═════════ -->
+  <section class="page" data-title="Chapter I — Where You Began" aria-labelledby="ch1Title">
+    <figure class="chapter-art">
+      <img src="illustrations/part-1.webp"
+           alt="Crayon illustration of a narrow house by the harbor in Cebu, jeepneys climbing the hill at sunrise"
+           width="1280" height="720" />
+      <figcaption class="caption-strip">Chapter I</figcaption>
+    </figure>
+    <div class="chapter-head">
+      <span class="chapter-numeral" style="--c: var(--sienna);">Chapter I</span>
+      <h2 id="ch1Title" tabindex="-1">Where You Began</h2>
+      <p class="epigraph">“Never let a guest leave hungry.”<cite>— the rule of your childhood table</cite></p>
+    </div>
+
+    <div class="prose clearfix">
+      <p class="dropcap">Every story is rooted somewhere, and yours begins in a narrow house by the harbor in Cebu. Mornings smelled of salt and frying garlic rice, and you could hear the jeepneys coughing up the hill before sunrise. Notice what your memory kept: not the furniture, not the weather, but smell and sound — the senses of someone already paying a particular kind of attention.</p>
+
+      <figure class="vignette vig-right">
+        <span class="tape tape-gold tape-tl" aria-hidden="true"></span>
+        <img src="illustrations/part-1.webp" alt="" aria-hidden="true" loading="lazy"
+             style="object-position: 20% 60%;" width="400" height="400" />
+        <figcaption>the house by the harbor</figcaption>
+      </figure>
+
+      <p>On the porch of that house, your grandmother taught you to mend fishing nets. You remember the rough twine and her humming — she never finished a song, just circled the same three bars. You return to that porch often; the memories we revisit are the ones still doing work in us. A net, after all, is a thing made almost entirely of holes, held together by patient hands. She was teaching you more than mending.</p>
+
+      <p>Then there are the people. Asked who shaped you most, you didn't hesitate: your older brother Danilo, who read everything and gave you his books a year before you were ready for them — which meant you were always reaching. The people who form us early set the questions we spend decades answering. Watch for his shadow in the later chapters; it falls across more pages than you might expect.</p>
+
+      <p>The world had words for you before you had words for yourself. People called you <em>the quiet one who notices</em>. Teachers said you daydreamed; your mother said you were listening to things other people walked past. Childhood labels are half observation, half assignment. Part of growing up is deciding which of those words to keep — and this one, you kept.</p>
+
+      <p>And there was a wish. You wanted to be a cartographer. You loved that someone's job was to say: <em>this is where we are.</em> The wish became photography, which is the same job with light. Early dreams rarely die; they change clothes.</p>
+    </div>
+
+    <blockquote class="pull-quote">
+      <p>My grandmother taught me to mend fishing nets on the porch. I remember the rough twine and her humming — she never finished a song, just circled the same three bars.</p>
+      <footer>In your own words · a moment you return to</footer>
+    </blockquote>
+
+    <aside class="reflection">
+      <span class="reflection-label"><span class="star" aria-hidden="true"></span>Think about it!</span>
+      <p>Of everything that harbor contained, your memory kept the smell of garlic rice, the cough of jeepneys, three bars of an unfinished song. What we retain is rarely an accident — it is the first draft of who we become. What else have you kept without noticing?</p>
+    </aside>
+
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 5 · CHAPTER II ═════════ -->
+  <section class="page" data-title="Chapter II — The Shape of Your Days" aria-labelledby="ch2Title">
+    <figure class="chapter-art">
+      <img src="illustrations/part-2.webp"
+           alt="Crayon illustration of a photographer at golden hour, camera raised toward fishing boats on the water"
+           width="1280" height="720" />
+      <figcaption class="caption-strip">Chapter II</figcaption>
+    </figure>
+    <div class="chapter-head">
+      <span class="chapter-numeral" style="--c: var(--moss);">Chapter II</span>
+      <h2 id="ch2Title" tabindex="-1">The Shape of Your Days</h2>
+      <p class="epigraph">“The hour when the light goes gold and the water forgives the day.”<cite>— the part of the day that feels most like you</cite></p>
+    </div>
+
+    <div class="prose clearfix">
+      <p class="dropcap">Here is an ordinary day in your life, as you describe it: it begins before the light does, with coffee and the soft mechanical click of memory cards being emptied of yesterday. Then errands, edits, the small administration of a working photographer's week. But read your day back the way a stranger would, and one thing leaps off the schedule — every evening, no matter the deadline, you walk to wherever the water is.</p>
+
+      <figure class="vignette postcard vig-left">
+        <span class="tape tape-tr" aria-hidden="true"></span>
+        <span class="tape tape-grape tape-bl" aria-hidden="true"></span>
+        <img src="illustrations/part-2.webp" alt="" aria-hidden="true" loading="lazy"
+             style="object-position: 80% 30%;" width="464" height="290" />
+        <figcaption>golden hour, kept daily</figcaption>
+      </figure>
+
+      <p>Within that routine, one moment stands apart. You said the part of the day that feels most like you is the hour when the light goes gold and you are standing somewhere with a camera, saying — without words — <em>this is where we are.</em> Hold onto that. It is a compass needle. Most plans for the future are really attempts to build more of that moment into more of the day.</p>
+
+      <p>When no one is watching and nothing is required, you turn to the same quiet work: noticing. Sorting photographs no client asked for. Re-reading the books Danilo handed down, still a year ahead of you in some way you can't name. The unobserved self is the most honest witness in this book, and yours keeps choosing attention, freely and repeatedly. That is as close to a definition of you as these pages will get.</p>
+
+      <p>And yet something in the current arrangement chafes. The commissioned work pays, but it points the camera where other people ask it to point. The harbor pictures — the ones that feel like mending nets — stay in a folder no one has seen. Naming what we tolerate is the first act of refusing it. You have now named it in writing.</p>
+    </div>
+
+    <blockquote class="pull-quote">
+      <p>I wanted to be a cartographer. I loved that someone's job was to say: this is where we are. The wish became photography, which is the same job with light.</p>
+      <footer>In your own words · what occupies your mind these days</footer>
+    </blockquote>
+
+    <aside class="reflection">
+      <span class="reflection-label"><span class="star" aria-hidden="true"></span>Think about it!</span>
+      <p>Read your day back as a stranger would. Where does the energy go? Who gets the best hours? An ordinary day, repeated, is not a detail of a life — it <em>is</em> the life. What would one more golden hour a week cost you, and what is it costing you not to take it?</p>
+    </aside>
+
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 6 · CHAPTER III ═════════ -->
+  <section class="page" data-title="Chapter III — What You Carry" aria-labelledby="ch3Title">
+    <figure class="chapter-art">
+      <img src="illustrations/part-3.webp"
+           alt="Crayon illustration of a long table set for many guests, fishing nets and lanterns strung above"
+           width="1280" height="720" />
+      <figcaption class="caption-strip">Chapter III</figcaption>
+    </figure>
+    <div class="chapter-head">
+      <span class="chapter-numeral" style="--c: var(--sky-deep);">Chapter III</span>
+      <h2 id="ch3Title" tabindex="-1">What You Carry</h2>
+      <p class="epigraph">“Even when there was little, the table stretched.”<cite>— a belief you keep against the grain</cite></p>
+    </div>
+
+    <div class="prose clearfix">
+      <p class="dropcap">Everyone carries a private constitution — articles of belief that the people around them may not share. Yours has one article above the others: <em>never let a guest leave hungry.</em> Even when there was little, the table stretched. In a world that measures generosity carefully, you learned it as a law of physics: a table is a thing that stretches. Convictions held against the grain cost something to keep. That you have paid the cost, in lean months and crowded kitchens, says as much about you as the belief itself.</p>
+
+      <p>You also carry a quieter passenger: the fear that noticing is not the same as mattering — that the quiet one who watches the room will one day discover the room never watched back. Fear of this kind doesn't announce itself; it steers from the back seat, one small decision at a time. It is the reason the harbor folder stays closed. Seeing your own hand name it on a page is the beginning of taking the wheel back.</p>
+
+      <figure class="vignette vig-left">
+        <span class="tape tape-grape tape-tr" aria-hidden="true"></span>
+        <img src="illustrations/part-3.webp" alt="" aria-hidden="true" loading="lazy"
+             style="object-position: 50% 85%;" width="400" height="400" />
+        <figcaption>the table that stretched</figcaption>
+      </figure>
+
+      <p>But keep this surprise close, too. The first time a stranger wept at one of your photographs — a picture of hands and twine, nothing more — you surprised yourself. It is evidence, admissible and first-hand, that your own forecast of yourself runs conservative. Whatever you believe your limits are, you have already been wrong about them at least once.</p>
+
+      <p>Listen to what people thank you for. They thank you for seeing them — for the photograph that caught what they could not say, for the chair found at a full table, for the question no one else thought to ask. Gratitude, repeated, is the world telling you where your gift sits. And when love is asked of you and you do it well, it looks like a meal, a mended thing, an unhurried hour of attention.</p>
+    </div>
+
+    <blockquote class="pull-quote">
+      <p>Never let a guest leave hungry. Even when there was little, the table stretched.</p>
+      <footer>In your own words · a belief you live by</footer>
+    </blockquote>
+
+    <aside class="reflection">
+      <span class="reflection-label"><span class="star" aria-hidden="true"></span>Think about it!</span>
+      <p>Set these side by side — the believing, the fearing, the surprising, the giving. This is the luggage you bring into every room. Most of it, it turns out, is worth carrying. Which single piece would you set down tomorrow, if you let yourself?</p>
+    </aside>
+
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 7 · CHAPTER IV ═════════ -->
+  <section class="page" data-title="Chapter IV — This Is Where We Are" aria-labelledby="ch4Title">
+    <figure class="chapter-art">
+      <img src="illustrations/part-4.webp"
+           alt="Crayon illustration of a hand-drawn map unrolling into a sunrise over the sea, a small camera resting on its corner"
+           width="1280" height="720" />
+      <figcaption class="caption-strip">Chapter IV</figcaption>
+    </figure>
+    <div class="chapter-head">
+      <span class="chapter-numeral" style="--c: var(--grape);">Chapter IV</span>
+      <h2 id="ch4Title" tabindex="-1">This Is Where We Are</h2>
+      <p class="epigraph">The title of this chapter is yours. You wrote it.</p>
+    </div>
+
+    <div class="prose clearfix">
+      <p class="dropcap">Begin with the honest forecast. If nothing changed, you said, the commissions would keep coming, the folder would keep growing, and the porch in Cebu would keep receding — visited in memory, photographed never. A projection like that is not a verdict. It is a draft, shown to the author early enough to revise. Consider it shown.</p>
+
+      <p>Given permission to fail, you knew at once what you would attempt: a photo book of the harbor — the net-menders, the long tables, the gold hour — with your grandmother's unfinished song as its title. Read that again, slowly. The only condition you required was the continued pride of people who would, almost certainly, be proud of you for attempting it at all. The permission you were waiting for has, in other words, already been granted.</p>
+
+      <figure class="vignette vig-right">
+        <span class="tape tape-gold tape-tl" aria-hidden="true"></span>
+        <span class="tape tape-br" aria-hidden="true"></span>
+        <img src="illustrations/part-4.webp" alt="" aria-hidden="true" loading="lazy"
+             style="object-position: 75% 20%;" width="400" height="400" />
+        <figcaption>the unfinished map</figcaption>
+      </figure>
+
+      <p>You already know the direction of travel. More mornings with the camera pointed where <em>you</em> choose; more long tables; more pages of the harbor folder out in the light. Less waiting for an invitation that was never going to come in writing. Most plans fail by being vague. This one has the rare advantage of being specific.</p>
+
+      <p>One thing stands between this chapter and the next, and you named it without being asked twice: the conversation with Danilo — the thank-you a year overdue, like every book he ever handed you. Postponed conversations gather interest. The cost of having it is fixed; the cost of waiting compounds.</p>
+
+      <p>And when you imagine being remembered — not in general, but by one particular person — you hope to be remembered the way you remember her: as someone who noticed, who mended, who made the table stretch. That sentence is the quiet thesis of this entire book. Every chapter before it has been an argument in its favor.</p>
+    </div>
+
+    <blockquote class="pull-quote">
+      <p>A photo book of the harbor — the net-menders, the long tables, the gold hour — with her unfinished song as its title.</p>
+      <footer>In your own words · what you would attempt, with permission to fail</footer>
+    </blockquote>
+
+    <aside class="reflection">
+      <span class="reflection-label"><span class="star" aria-hidden="true"></span>Think about it!</span>
+      <p>A title, a direction, a postponed conversation, a person to be remembered by. That is not a questionnaire result. That is a plan. What is the smallest first step you could take before this week ends?</p>
+    </aside>
+
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 8 · BEGIN AGAIN ═════════ -->
+  <section class="page" data-title="Begin Again" aria-labelledby="closingTitle">
+    <div class="closing-head">
+      <div class="starline" style="margin: 0.6rem 0 1.4rem;" aria-hidden="true">
+        <span class="star star-coral"></span>
+        <span class="star star-lg"></span>
+        <span class="star star-moss"></span>
+      </div>
+      <span class="chapter-numeral" style="--c: var(--gold); color: var(--ink);">Closing</span>
+      <h2 id="closingTitle" tabindex="-1">Begin Again</h2>
+    </div>
+    <div class="prose">
+      <p class="dropcap">You have reached the end of this book, Mara, but you will have noticed that it has no real ending — the final chapter is titled and outlined, and its author is reading this sentence.</p>
+      <p>Answer the questions again in a year and this book will be different, because you will be. Perhaps the harbor folder will have a spine and a cover by then. Perhaps the song will finally get its fourth bar. That is the only promise SOURCE makes: the story is yours, and it is still being written.</p>
+      <p>Until then — keep noticing. It was never daydreaming. Your mother was right: you were listening to things other people walked past, and now there is a book to prove it.</p>
+    </div>
+    <div class="ornament-row" style="margin-top: 2.4rem;" aria-hidden="true">
+      <span class="rule"></span><span class="star"></span><span class="rule"></span>
+    </div>
+    <button type="button" class="corner-hint" data-next aria-label="Turn to the next page"></button>
+  </section>
+
+  <!-- ═════════ PAGE 9 · BACK COVER ═════════ -->
+  <section class="page back-cover" data-title="Back cover" aria-labelledby="backTitle">
+    <div class="back-inner">
+      <span class="spine-mark" aria-hidden="true"><span class="star"></span></span>
+      <h2 id="backTitle" tabindex="-1" style="font-size: clamp(1.3rem, 1.1rem + 1.2vw, 1.7rem);">Every life is a book.<br />Most are never written down.</h2>
+      <p class="back-blurb">“The Story of Mara” was composed entirely from Mara Velasco's own answers to the SOURCE questionnaire — a harbor in Cebu, an unfinished song, a brother's borrowed books, and a table that always stretched. No two copies of this book exist, because no two lives do.</p>
+      <div class="starline" style="margin: 0;" aria-hidden="true">
+        <span class="star star-sm star-coral"></span>
+        <span class="star star-sm"></span>
+        <span class="star star-sm star-moss"></span>
+        <span class="star star-sm star-sky"></span>
+        <span class="star star-sm star-grape"></span>
+      </div>
+      <p class="colophon">SOURCE · your story, in your own words</p>
+    </div>
+  </section>
+</main>
+
+<!-- ── Reader navigation ──────────────────────────────────── -->
+<nav class="reader-nav" aria-label="Book pages">
+  <p class="page-counter" id="pageCounter">Page 1 of 9</p>
+  <button type="button" class="btn" id="prevBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+    Back
+  </button>
+  <div class="pager" id="pager" role="group" aria-label="Jump to a page"></div>
+  <button type="button" class="btn btn-coral" id="nextBtn">
+    Next
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</nav>
+
+<script>
+(function () {
+  "use strict";
+
+  var pages = Array.prototype.slice.call(document.querySelectorAll(".page"));
+  var pager = document.getElementById("pager");
+  var prevBtn = document.getElementById("prevBtn");
+  var nextBtn = document.getElementById("nextBtn");
+  var printBtn = document.getElementById("printBtn");
+  var progressFill = document.getElementById("progressFill");
+  var counter = document.getElementById("pageCounter");
+  var announce = document.getElementById("pageAnnounce");
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  var current = 0;
+  var total = pages.length;
+
+  /* build the star pager */
+  pages.forEach(function (page, i) {
+    var dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "pager-dot";
+    dot.setAttribute("aria-label", "Go to page " + (i + 1) + ": " + page.dataset.title.replace(/&amp;/g, "&"));
+    var star = document.createElement("span");
+    star.className = "star";
+    star.setAttribute("aria-hidden", "true");
+    dot.appendChild(star);
+    dot.addEventListener("click", function () { go(i); });
+    pager.appendChild(dot);
+  });
+  var dots = Array.prototype.slice.call(pager.children);
+
+  function render(direction) {
+    pages.forEach(function (page, i) {
+      page.classList.remove("turn-fwd", "turn-back");
+      page.classList.toggle("current", i === current);
+    });
+    if (!reduceMotion.matches && direction) {
+      pages[current].classList.add(direction > 0 ? "turn-fwd" : "turn-back");
+    }
+    dots.forEach(function (dot, i) {
+      if (i === current) { dot.setAttribute("aria-current", "page"); }
+      else { dot.removeAttribute("aria-current"); }
+    });
+    progressFill.style.width = (((current + 1) / total) * 100) + "%";
+    counter.textContent = "Page " + (current + 1) + " of " + total;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    announce.textContent = "Page " + (current + 1) + " of " + total + ": " + pages[current].dataset.title;
+  }
+
+  function go(index, fromKeyboard) {
+    var target = Math.max(0, Math.min(total - 1, index));
+    if (target === current) { return; }
+    var direction = target > current ? 1 : -1;
+    current = target;
+    render(direction);
+    window.scrollTo({ top: 0, behavior: reduceMotion.matches ? "auto" : "smooth" });
+    /* move reading focus onto the new page's heading for screen readers */
+    if (fromKeyboard) {
+      var heading = pages[current].querySelector("h1[tabindex], h2[tabindex]");
+      if (heading) { heading.focus({ preventScroll: true }); }
+    }
+  }
+
+  prevBtn.addEventListener("click", function () { go(current - 1); });
+  nextBtn.addEventListener("click", function () { go(current + 1); });
+
+  /* page-corner hints turn forward */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-next]"), function (el) {
+    el.addEventListener("click", function () { go(current + 1); });
+  });
+
+  /* clickable contents */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-goto]"), function (el) {
+    el.addEventListener("click", function () {
+      go(parseInt(el.getAttribute("data-goto"), 10), true);
+    });
+  });
+
+  /* keyboard paging — skipped while typing in form fields (none here, but safe) */
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") { return; }
+    if (e.key === "ArrowRight") { e.preventDefault(); go(current + 1, true); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); go(current - 1, true); }
+    else if (e.key === "Home") { e.preventDefault(); go(0, true); }
+    else if (e.key === "End") { e.preventDefault(); go(total - 1, true); }
+  });
+
+  /* Download as PDF — print styles reveal every page in order */
+  printBtn.addEventListener("click", function () { window.print(); });
+
+  render(0);
+})();
+</script>
+</body>
+</html>
