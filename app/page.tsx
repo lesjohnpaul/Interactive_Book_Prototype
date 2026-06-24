@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { asset } from "@/lib/asset";
 import { ArrowUpRight } from "lucide-react";
 import ScrollFx from "./components/ScrollFx";
 
@@ -140,7 +141,7 @@ export default function Landing() {
             <div className="bezel floaty">
               <div>
                 <Image
-                  src="/hero-book.webp"
+                  src={asset("/hero-book.webp")}
                   alt="An open book on a desk at night; golden light rises from its pages and forms a constellation of life moments: a childhood house, two embracing figures, a bicycle, a bird"
                   width={1168}
                   height={880}
@@ -179,7 +180,7 @@ export default function Landing() {
             <div className="bezel">
               <div>
                 <Image
-                  src="/problem-shelf.webp"
+                  src={asset("/problem-shelf.webp")}
                   alt="A dark shelf of identical featureless books, with one single warm golden book glowing among them"
                   width={1024}
                   height={1024}
@@ -255,7 +256,7 @@ export default function Landing() {
             <div className="bezel">
               <div>
                 <Image
-                  src="/constellation.webp"
+                  src={asset("/constellation.webp")}
                   alt="A constellation map across an indigo night sky where each star is a tiny golden vignette of a personal memory, joined by fine gold lines"
                   width={1344}
                   height={752}
@@ -337,7 +338,7 @@ export default function Landing() {
             <div className="bezel">
               <div className="bg-cloud text-ink">
                 <Image
-                  src="/harbor-dawn.webp"
+                  src={asset("/harbor-dawn.webp")}
                   alt="A narrow house by a quiet harbor at dawn, one window glowing warm, fishing nets on the porch, calm misty sea"
                   width={1024}
                   height={688}
